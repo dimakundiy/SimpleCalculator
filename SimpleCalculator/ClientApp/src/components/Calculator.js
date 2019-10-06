@@ -1,5 +1,6 @@
 ﻿import React, { Component } from 'react';
 import './calc.css';
+import { connect } from 'react-redux';
 
 class Calculator extends Component {
     constructor(props) {
@@ -13,8 +14,37 @@ class Calculator extends Component {
         this.decInput = this.decInput.bind(this);
         this.clearInput = this.clearInput.bind(this);
         this.calculate = this.calculate.bind(this);
+        this.his = this.his.bind(this);
+        this.clearHis = this.clearHis.bind(this);
+        this.percent = this.percent.bind(this);
+        this.sign = this.sign.bind(this);
+    
     }
-
+  
+    sign(e) {
+        if (this.state.equation.includes("=")) {
+            let val = this.state.display;
+            val += e.currentTarget.value;
+            this.setState({
+                equation: val
+            });
+        } else {
+            if (this.state.equation == "" && this.state.equation.match(/[*\-\/+]$/) == null) {
+                let val = this.state.equation;
+                val += e.currentTarget.value;
+                this.setState({
+                    equation: val
+                });
+            } else if (this.state.equation.match(/[*\-\/+]$/) != null) {
+                let val = this.state.equation;
+                val = val.substring(0, (val.length - 1));
+                val += e.currentTarget.value;
+                this.setState({
+                    equation: val
+                });
+            }
+        }}
+   
     numInput(e) {
         if (this.state.equation.match(/[0-9\.]$/) && !this.state.equation.includes("=")) {
             if (this.state.equation.match(/[+\-*\/]/) == null) {
@@ -42,7 +72,31 @@ class Calculator extends Component {
             });
         }
     }
-
+    percent(e) {
+        if (this.state.equation.includes("=")) {
+            let val = this.state.display;
+            val += e.currentTarget.value;
+            this.setState({
+                equation: val
+            });
+        } else {
+            if (this.state.equation != "" && this.state.equation.match(/[*\-\/+]$/) == null) {
+                let val = this.state.equation;
+                //val += e.currentTarget.value;
+                this.setState({
+                    equation: val+"/100"
+                });
+            } else if (this.state.equation.match(/[*\-\/+]$/) != null) {
+                let val = this.state.equation;
+                val = val.substring(0, (val.length - 1));
+                val += e.currentTarget.value;
+                this.setState({
+                    equation: val
+                });
+            }
+        }
+        
+    }
     operInput(e) {
         if (this.state.equation.includes("=")) {
             let val = this.state.display;
@@ -96,54 +150,48 @@ class Calculator extends Component {
         });
     }
 
-    //calculate() {
-    //    if (this.state.equation.includes("=")) {
-    //        let val = `${this.state.display} = ${this.state.display}`;
-    //        this.setState({
-    //            equation: val
-    //        });
-    //    } else if (this.state.equation != "" && this.state.equation.match(/[+\-*\/]/) != null && this.state.equation.match(/[+\-*\/]$/) == null) {
-    //        let result = Number.isInteger(eval(this.state.equation)) ? eval(this.state.equation) : parseFloat(eval(this.state.equation).toFixed(5));
-    //        let val = this.state.equation;
-    //        val += ` = ${result}`;
-    //        this.setState({
-    //            display: result,
-    //            equation: val
-    //        });
-    //    }
-    //}
+    his() {
+        if (this.props.Operation.his != null) {
+            this.props.getHistor();
+        }
+    }
+
+    clearHis() {
+        this.props.clearHistor();
+    }
+    renderItems = arr => arr.map((x) => (<div class="history-item-result" key={x.id}>{x.expression}={x.result}</div> ));
+    
     calculate() {
-        let val = this.state.equation;
+
         if (this.state.equation.includes("=")) {
             let val = `${this.state.display} = ${this.state.display}`;
             this.setState({
                 equation: val
             });
         }
-        else {
-
-            val += ` = `//+result;
+        else if (this.state.equation != "" && this.state.equation.match(/[+\-*\/]/) != null && this.state.equation.match(/[+\-*\/]$/) == null) {
+            let result = Number.isInteger(eval(this.state.equation)) ? eval(this.state.equation) : parseFloat(eval(this.state.equation).toFixed(5));
+            let val = this.state.equation;
+            val += ` = ${result}`;
             this.setState({
-                display: "",//result
+                display: result,
                 equation: val
             });
         }
-
-        console.log(this.state.equation);
         this.props.ex_op(this.state.equation);
-
-
     }
 
-
+   
     render() {
+
+        const items = (this.props.Operation.his != null) ? this.renderItems(this.props.data) : null;
         return (
-            <form >
-                <div className="container">
-                    <Display equation={this.state.equation} display={this.state.display} />
-                    <Button id="clear" value="clear" display="AC" class="row-3 col-1" click={this.clearInput} />
-                    <Button id="sign" value="+/-" display="±" class="row-3 col-2" />
-                    <Button id="percent" value="%" display="%" class="row-3 col-3" />
+            
+                <div className="container ">
+                <Display equation={this.state.equation} display={this.state.display} />
+                <Button id="clear" value="clear" display="AC" class="clear row-3 col-1" click={this.clearInput} />
+                <Button id="sign" value="-" display="±" class="row-3 col-2" click={this.sign}/>
+                <Button id="percent" value="%" display="%" class="row-3 col-3" click={this.percent} />
                     <Button id="divide" value="/" display="÷" class="oper row-3 col-4" click={this.operInput} />
                     <Button id="seven" value="7" display="7" class="num row-4 col-1" click={this.numInput} />
                     <Button id="eight" value="8" display="8" class="num row-4 col-2" click={this.numInput} />
@@ -158,10 +206,14 @@ class Calculator extends Component {
                     <Button id="three" value="3" display="3" class="num row-6 col-3" click={this.numInput} />
                     <Button id="add" value="+" display="+" class="oper row-6 col-4" click={this.operInput} />
                     <Button id="zero" value="0" display="0" class="num row-7 col-1-2" click={this.numInput} />
-                    <Button id="decimal" value="." display="." class="num row-7 col-3" click={this.decInput} />
-                    <Button id="equals" value="=" display="=" class="oper row-7 col-4" click={this.calculate} />
-                </div>
-            </form>
+                <Button id="decimal" value="." display="." class="num row-7 col-3" click={this.decInput} />
+                <Button id="equals" value="=" display="=" class="eqB row-7 col-4" click={(event) => { this.his(); this.calculate(); this.his(); this.his(); }} />
+                <Button display="Clear History" class=" b row-b col-1" click={(event) => { this.clearHis(); }} />
+                <div className="col-H row-H "><div class="op" >Operation history:</div> {this.props.data.length > 0 ? items : <div>No result</div>}</div>
+               
+            </div>
+                
+           
         );
     }
 }
@@ -172,6 +224,8 @@ const Display = props => <div id="calc-display" className="row-1-2 col-1-4"><spa
 
 const Button = props => <button type="button" id={props.id} value={props.value} className={props.class} onClick={props.click}>{props.display}</button>;
 
+const mapStateToProps = (state) => ({
+    Operation: state.calc
+});
 
-
-export default Calculator;
+export default connect(mapStateToProps, null)(Calculator);

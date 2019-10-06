@@ -10,7 +10,17 @@ export default class CalculatorService{
         console.log(res);
         return res;
     }
-
+    getHistory = async () => {
+        const res = await this.getResource('Calculator/History');
+        console.log(res);
+        return res;
+    }
+    ClearHistory = async () => {
+        const res = await this.getResource('Calculator/ClearHistory');
+        console.log(res);
+        return res;
+    }
+    
     getResource = async (url) => {
         const res = await fetch(this._baseUrl + url);
         if(!res.ok){

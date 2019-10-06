@@ -25,8 +25,26 @@ namespace SimpleCalculator.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Calculate(string exp)
         {
-            var a = _calculatorService.Calculate(exp);
-            return Ok(a);
+            var res = _calculatorService.Calculate(exp);
+            return Ok(res);
         }
+
+        [AllowAnonymous]
+        [HttpGet("[action]")]
+        public async Task<IActionResult> History()
+        {
+            var res = _calculatorService.History();
+            return Ok(res);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("[action]")]
+        public async Task<IActionResult> ClearHistory()
+        {
+             _calculatorService.ClearHistory();
+            var res = _calculatorService.History();
+            return Ok(res);
+        }
+
     }
 }

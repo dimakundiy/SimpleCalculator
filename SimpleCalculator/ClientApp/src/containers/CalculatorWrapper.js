@@ -1,22 +1,35 @@
 ﻿import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Calculator from '../components/Calculator';
-import ex_operation from '../actions/calculator';
+import ex_operation, { getHistory, ClearHistory } from '../actions/calculator';
 
 
 class CalculatorWrapper extends Component {
+    componentWillMount() {
+        this.props.getHistor();
+    }
+    componentDidMount() {
+        this.props.getHistor();
+    }
     render() {
+        console.log("wrapper"+this.props.Operation.data)
         return <div>
-            <Calculator ex_op={this.props.ex_op} />
+            <Calculator  getHistor={this.props.getHistor} ex_op={this.props.ex_op} data={this.props.Operation.his} clearHistor={this.props.ClearHistor} />
             </div>
     }
 }
-
-const mapStateToProps = (state) => (state.Operation);
+const mapStateToProps = (state) => {
+    return {
+        Operation: state.calc,
+       
+    }
+};
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        ex_op: (value) => dispatch(ex_operation(value))
+        ex_op: (value) => dispatch(ex_operation(value)),
+        getHistor: () => dispatch(getHistory()),
+        ClearHistor: () => dispatch(ClearHistory())
     }
 };
 

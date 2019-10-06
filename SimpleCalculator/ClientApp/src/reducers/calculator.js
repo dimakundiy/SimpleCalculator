@@ -1,7 +1,7 @@
 ﻿
 import initialState from '../store/initialState';
 import {
-    EXECUDE_OPERATION_PENDING, EXECUDE_OPERATION_SUCCESS, EXECUDE_OPERATION_ERROR
+    CLEAR_HISTORY_SUCCESS, EXECUDE_HISTORY_SUCCESS, EXECUDE_OPERATION_PENDING, EXECUDE_OPERATION_SUCCESS, EXECUDE_OPERATION_ERROR
 } from '../actions/calculator';
 
 export const reducer = (
@@ -24,6 +24,18 @@ export const reducer = (
                 ...state,
                 isPending: false,
                 data: action.payload
+            }
+        case EXECUDE_HISTORY_SUCCESS:
+            return {
+                ...state,
+                isPending: false,
+                his: action.payload
+            }
+        case CLEAR_HISTORY_SUCCESS:
+            return {
+                ...state,
+                isPending: false,
+                his: action.payload
             }
         default:
             return state;
