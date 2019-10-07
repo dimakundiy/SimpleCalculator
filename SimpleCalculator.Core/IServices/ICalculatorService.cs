@@ -1,5 +1,4 @@
-﻿using SimpleCalculator.Core.DTOs;
-using SimpleCalculator.Db.Entities;
+﻿using SimpleCalculator.Db.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
